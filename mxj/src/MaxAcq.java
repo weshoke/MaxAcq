@@ -18,7 +18,7 @@ public class MaxAcq extends MaxObject {
 		public String channel_type = "";
 		public int channel = 0;
 	}
-	
+
 	// current server
 	private ACQServer current_server = null;
 	private int nsamples = 20;
@@ -220,24 +220,6 @@ public class MaxAcq extends MaxObject {
 	}
 	
 	public void bang() {
-		/*
-		if(current_server != null && connection.data_socket != null) {
-			double vec[] = new double[nsamples];
-			//post("nsmap "+connection.data_socket.numSamples() + " " + nsamples);
-			while(connection.data_socket.numSamples() >= nsamples) {
-				for(int i=0; i < nsamples; i++) {
-					vec[i] = connection.data_socket.getSample(i);
-				}
-				connection.matrix.copyArrayToMatrix(vec);
-				connection.data_socket.removeSamplesFromBuffer(nsamples);
-				outlet(0, new Atom[] {
-						Atom.newAtom("jit_matrix"), 
-						Atom.newAtom(connection.matrix.getAttrString("name"))
-					});
-			}
-		}
-		*/
-		
 		Iterator<DataConnection> dcs = connections.values().iterator();
 		if(current_server != null) {
 			double vec[] = new double[nsamples];
@@ -270,67 +252,6 @@ public class MaxAcq extends MaxObject {
 			return;
 		}
 
-		/*
-		if(current_server != null) {
-			if(connection.data_socket == null) {
-				connection.data_socket = new ChannelDataSocket(PORT);
-			}
-			
-			if(connection.data_socket.isProcessing()) {
-				post("stop processing");
-				connection.data_socket.stopProcessing();
-			}
-			
-			try {
-				if(current_server.isChannelEnabled(s, (short)idx)) {
-					post("Enabled " + s + " " + idx);
-					current_server.changeMostRecentSampleEnabled(s, (short)idx, true);
-					
-					current_server.disableAllDataDelivery();
-					current_server.changeDataConnectionMethod(ACQServer.kMultipleConnectionDelivery);
-					current_server.changeTransportType(ACQServer.kTCPTransportType);
-					current_server.changeDataDeliveryEnabled(s, (short)idx, true);
-					current_server.changeConnectionPort(s, (short)idx, (short)PORT);
-					current_server.changeBinaryEndian(s, (short)idx, ACQServer.kBigEndian);
-					current_server.changeBinaryType(s, (short)idx, ACQServer.kDoubleDataType);
-				
-					// start the stream
-					connection.data_socket.startProcessing();
-				}
-				else {
-					error("Channel "+s+" "+idx+" is not available");
-					return;
-				}
-			}
-			catch(ProtocolException e) {
-				error(e.toString());
-			}
-	        
-	        System.out.println("Acquiring data into template...");
-	        try {
-	        	post("current_server.isAcquisitionInProgress(): " + current_server.isAcquisitionInProgress());
-        		current_server.toggleAcquisition();
-        		if(first_stream) {
-        			current_server.toggleAcquisition();
-        			current_server.toggleAcquisition();
-        			first_stream = false;
-        		}
-        		else {
-        			if(! current_server.isAcquisitionInProgress()) {
-        				current_server.toggleAcquisition();
-        			}
-        		}
-	        	post("2 current_server.isAcquisitionInProgress(): " + current_server.isAcquisitionInProgress());
-	        }
-	        catch(ProtocolException e) {
-	        	error(e.toString());
-	        }
-		}
-		
-		connection.channel_type = s;
-		connection.channel = idx;
-		*/
-		
 		String name = s+idx;
 		DataConnection connection = connections.get(name);
 		if(connection == null) {
@@ -373,6 +294,7 @@ public class MaxAcq extends MaxObject {
 					current_server.changeTransportType(ACQServer.kTCPTransportType);
 					
 					Iterator<DataConnection> dcs = connections.values().iterator();
+					// re-enable existing streams
 					while(dcs.hasNext()) {
 						DataConnection dc = dcs.next();
 						if(! start_connection_stream(dc)){
@@ -421,6 +343,15 @@ public class MaxAcq extends MaxObject {
 	}
 	
 	private boolean start_connection_stream(DataConnection connection) {
+		// reset connection data
+		connection.data_socket.removeSamplesFromBuffer(
+				connection.data_socket.numSamples()
+		);
+		
+		// clear matrix data
+		connection.matrix.clear();
+		
+		// connect to server
 		try {
 			current_server.changeMostRecentSampleEnabled(connection.channel_type, (short)connection.channel, true);
 			current_server.changeDataDeliveryEnabled(connection.channel_type, (short)connection.channel, true);

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
 /**
  * This helper class allows for reception of channel data via a TCP socket
  * over which an AcqKnowledge server is delivering binary data.  This
@@ -216,7 +217,12 @@ public class ChannelDataSocket {
      * @return number of buffered samples
      */
     public synchronized int numSamples() {
-        return(data.size());
+    	if(data == null) {
+    		return 0;
+    	}
+    	else {
+    		return(data.size());
+    	}
     }
     
     /**
@@ -245,6 +251,10 @@ public class ChannelDataSocket {
      * @throws IndexOutOfBoundsException
      */
     public synchronized void removeSamplesFromBuffer(int numSamples) {
+    	if(data == null) {
+    		return;
+    	}
+    	
         if(numSamples > data.size())
             throw new IndexOutOfBoundsException();
         

@@ -1,0 +1,14 @@
+MaxAcq is a Java (mxj) objet for Max (www.cycling74.com) for communicating with Biopac's Acq server.  It interfaces with the Acq server's streaming capability, outputting data channels as Jitter matrices.
+
+Prerequisites: 
+	- AcqKnowledge software with network capability from Biopac
+	- Max5 from Cycling '74
+	- Java runtime environment
+
+
+Workflow:
+1) Open AcqKnowledge application.
+2) Open Max5 and a patcher with the MaxAcq mxj object. MaxAcq will automatically detect the Acq server if it exists.
+3) Enable sensor channels in AcqKnowledge either by loading in a template file through the MaxAcq 'loadTemplate' message or directly within the AcqKnowledge application
+4) Enable channels for streaming (e.g. calc 0, analog 0, digital 0) with the MaxAcq 'stream' message.
+5) Send a stream of bang messages to MaxAcq (usually with a metro) to output data as it arrives.

@@ -13,5 +13,18 @@ Workflow:
 4) Enable channels for streaming (e.g. calc 0, analog 0, digital 0) with the MaxAcq 'stream' message.
 5) Send a stream of bang messages to MaxAcq (usually with a metro) to output data as it arrives.
 
+
 Testing:
 In addition to the help file, a bare-bones Max example for testing purposes is included in examples/example.test.maxpat.
+
+
+Test Run:
+1) Open AcqKnowledge application, the program must be running for MaxAcq to detect it as a server.
+2) Open Max5 and within Max5, open the file: example.test.maxpat, found at 
+	/Applications/Max5/examples/MaxAcq
+
+3) Within the "example.test.maxpat" click on the button above the 'opendialog' text box to load an AcqKnowledge template file located at:
+	/Applications/Max5/examples/MaxAcq/template/acq_template.acq
+
+4) Under the text "Output Data" within the example.test.maxpat window, click on the toggle below it to enable output to the patch window (example.test.maxpat file window)
+5) Finally, click on the 'stream calc 0' message. The AcqKnowledge graph file should start acquiring data and the amplitude data from calculation channel CH0 should be streamed to and printed within the patch window.
